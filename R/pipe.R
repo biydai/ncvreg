@@ -2,7 +2,7 @@ pipe <- function(fit,# ncvreg object
                  lambda, # the model of interest, recommend: use cv
                  X = NULL,# design matrix
                  y = NULL,# outcome
-                 sigmasq = NULL # this is an option for customized estimates.
+                 sigmasq = NULL# this is an option for customized estimates
 ){ 
   # setting up
   stopifnot(class(fit)[1] == "ncvreg")
@@ -100,10 +100,21 @@ pipe <- function(fit,# ncvreg object
   }
   
   t <- beta_PIPE/sqrt(sigmasq_PIPE)
+  pvalue <-(1 - pnorm(abs(t)))*2
+  qvalue <- p.adjust(pvalue,method = "BH")
   
-  return(list(beta = beta_PIPE,
-              sigmasq = sigmasq_PIPE,
-              t = t,
-              lambda = lambda)
+  res <- data.frame(
+      coef.model = beta[-1],
+      coef.pipe = beta_PIPE,
+      SE = sqrt(sigmasq_PIPE),
+      t = t,
+      p.value = pvalue,
+      p.adjust = qvalue)
+  
+  res_reorder <- res[order(pvalue),]
+  
+  return(list(model = data.frame(lambda = lambda),
+              results = res_reorder)
+              
   )
 }
