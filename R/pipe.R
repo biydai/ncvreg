@@ -1,3 +1,37 @@
+#' Compute projection-based inference test statistics for all features
+#' 
+#' `pipe()` is a function that compute projection-based inference test statistics for all features
+#' 
+#' @param fit      A fitted `ncvreg` object.
+#' @param lambda   The value of lambda at which inference should be carried out.
+#' @param X,y      The design matrix and response used to fit the model; in most cases, it is not necessary to provide
+#'   `X` and `y` as they are returned by `ncvreg`, but see the `returnX` argument in [ncvreg()].
+#' @param sigmasq The estimated error variance for linear model. Only needed for gaussian case. If not supplied, the residual sums of squares will be computed
+#'   
+#' @return The object returns a data frame with one row per feature and six columns:
+#' * `coef.model`: The coefficient estimate from the penalized regression fit
+#' * `coef.pipe`: The pipe coefficient
+#' * `SE`: Standard error of the pipe coefficient
+#' * `t`: The pipe test statistic, computed based on coef.pipe and SE. It approximately follows a standard normal distribution under the null hypothesis that the
+#'        feature is independent of the outcome.
+#' * `p.value`: The pvalue computed based on the test statistic t
+#' * `p.adjust`: The qvalue computed based on Benjamini Hochberg Procedure
+#' 
+#' @examples
+#' # Linear regression
+#' data(Prostate)
+#' fit <- ncvreg(Prostate$X, Prostate$y)
+#' pipe(fit, 0.1)
+#' 
+#' 
+#' # Logistic regression
+#' data(Heart)
+#' X <- Heart$X
+#' y <- Heart$y
+#' fit <- ncvreg(X, y, family='binomial')
+#' pipe(fit, 0.1)
+
+
 pipe <- function(fit,# ncvreg object
                  lambda, # the model of interest, recommend: use cv
                  X = NULL,# design matrix
